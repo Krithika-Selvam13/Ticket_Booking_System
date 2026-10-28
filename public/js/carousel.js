@@ -1,13 +1,16 @@
 class CircularCarousel {
-  constructor(containerId, items, onActiveChange) {
+  constructor(containerId, items, onActiveChange, onSelect) {
     this.container = document.getElementById(containerId);
     this.items = items;
     this.onActiveChange = onActiveChange;
+    this.onSelect = onSelect;
     this.angle = 0;
     this.radius = 420;
     this.isDragging = false;
+    this.isHovered = false;
     this.startX = 0;
     this.velocity = 0;
+    this.autoRotate = true;
     this.autoRotateSpeed = -0.15;
     this.currentIndex = 0;
     this.ring = null;
@@ -36,7 +39,15 @@ class CircularCarousel {
           <h4 class="font-bold text-sm text-white truncate">${item.title}</h4>
         </div>
       `;
-      el.addEventListener('click', () => this.rotateToIndex(idx));
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.autoRotate = false;
+        if (this.currentIndex === idx) {
+          if (this.onSelect) this.onSelect(item);
+        } else {
+          this.rotateToIndex(idx);
+        }
+      });
       this.ring.appendChild(el);
     });
 
@@ -46,9 +57,14 @@ class CircularCarousel {
 
   bindEvents() {
     const stage = this.container.querySelector('.carousel-stage');
+    if (!stage) return;
+
+    stage.addEventListener('mouseenter', () => { this.isHovered = true; });
+    stage.addEventListener('mouseleave', () => { this.isHovered = false; });
 
     stage.addEventListener('mousedown', (e) => {
       this.isDragging = true;
+      this.autoRotate = false;
       this.startX = e.clientX;
     });
 
@@ -64,11 +80,13 @@ class CircularCarousel {
 
     stage.addEventListener('wheel', (e) => {
       e.preventDefault();
+      this.autoRotate = false;
       this.velocity += e.deltaY * 0.04;
     }, { passive: false });
   }
 
   rotateToIndex(index) {
+    this.autoRotate = false;
     const targetAngle = -index * this.angleStep;
     let diff = (targetAngle - this.angle) % 360;
     if (diff > 180) diff -= 360;
@@ -79,31 +97,37 @@ class CircularCarousel {
   render() {
     if (!this.isDragging) {
       this.velocity *= 0.92;
-      this.angle += this.velocity + this.autoRotateSpeed;
+      if (this.autoRotate && !this.isHovered) {
+        this.angle += this.velocity + this.autoRotateSpeed;
+      } else {
+        this.angle += this.velocity;
+      }
     }
 
-    this.ring.style.transform = `rotateY(${this.angle}deg)`;
+    if (this.ring) {
+      this.ring.style.transform = `rotateY(${this.angle}deg)`;
 
-    const normalizedAngle = (-this.angle % 360 + 360) % 360;
-    const activeIdx = Math.round(normalizedAngle / this.angleStep) % this.numItems;
+      const normalizedAngle = (-this.angle % 360 + 360) % 360;
+      const activeIdx = Math.round(normalizedAngle / this.angleStep) % this.numItems;
 
-    if (activeIdx !== this.currentIndex) {
-      this.currentIndex = activeIdx;
-      if (this.onActiveChange) this.onActiveChange(this.items[activeIdx]);
-    }
+      if (activeIdx !== this.currentIndex) {
+        this.currentIndex = activeIdx;
+        if (this.onActiveChange) this.onActiveChange(this.items[activeIdx]);
+      }
 
-    const cards = this.ring.children;
-    for (let i = 0; i < cards.length; i++) {
-      const cardAngle = i * this.angleStep;
-      cards[i].style.transform = `rotateY(${cardAngle}deg) translateZ(${this.radius}px)`;
+      const cards = this.ring.children;
+      for (let i = 0; i < cards.length; i++) {
+        const cardAngle = i * this.angleStep;
+        cards[i].style.transform = `rotateY(${cardAngle}deg) translateZ(${this.radius}px)`;
 
-      let relAngle = Math.abs((cardAngle - normalizedAngle + 180) % 360 - 180);
-      let depthAlpha = Math.max(0.2, 1 - (relAngle / 180) * 0.85);
-      let blur = (relAngle / 180) * 4;
+        let relAngle = Math.abs((cardAngle - normalizedAngle + 180) % 360 - 180);
+        let depthAlpha = Math.max(0.2, 1 - (relAngle / 180) * 0.85);
+        let blur = (relAngle / 180) * 4;
 
-      cards[i].style.opacity = depthAlpha;
-      cards[i].style.filter = `blur(${blur}px) brightness(${depthAlpha})`;
-      cards[i].classList.toggle('active-front', i === activeIdx);
+        cards[i].style.opacity = depthAlpha;
+        cards[i].style.filter = `blur(${blur}px) brightness(${depthAlpha})`;
+        cards[i].classList.toggle('active-front', i === activeIdx);
+      }
     }
 
     requestAnimationFrame(() => this.render());
