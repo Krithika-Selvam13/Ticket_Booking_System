@@ -1,0 +1,128 @@
+/* Custom Scrollbars */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #0c0d12; }
+::-webkit-scrollbar-thumb { background: #282d3e; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #ff6200; }
+
+/* React Bits: Shiny Text Shimmer */
+.shiny-text {
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0.6) 0%,
+    rgba(255, 255, 255, 1) 40%,
+    #ff7e2e 50%,
+    rgba(255, 255, 255, 1) 60%,
+    rgba(255, 255, 255, 0.6) 100%
+  );
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shine 4s linear infinite;
+  display: inline-block;
+}
+
+@keyframes shine {
+  to { background-position: 200% center; }
+}
+
+/* React Bits: Spotlight Card Effect */
+.spotlight-card {
+  position: relative;
+  background-color: #141721;
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  transition: transform 0.25s ease, border-color 0.25s ease;
+}
+
+.spotlight-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 98, 0, 0.5);
+}
+
+.spotlight-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    500px circle at var(--mouse-x, 0) var(--mouse-y, 0),
+    rgba(255, 98, 0, 0.16),
+    transparent 45%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.spotlight-card:hover::before {
+  opacity: 1;
+}
+
+/* React Bits: 3D Cylindrical Orbit Carousel */
+.carousel-stage {
+  perspective: 1200px;
+  width: 100%;
+  height: 480px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.carousel-ring {
+  width: 200px;
+  height: 300px;
+  position: absolute;
+  transform-style: preserve-3d;
+  transition: transform 0.15s ease-out;
+  cursor: grab;
+}
+
+.carousel-ring:active {
+  cursor: grabbing;
+}
+
+.carousel-item {
+  position: absolute;
+  width: 200px;
+  height: 300px;
+  left: 0;
+  top: 0;
+  border-radius: 1rem;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+  backface-visibility: hidden;
+  transition: filter 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.carousel-item.active-front {
+  border-color: #ff6200;
+  box-shadow: 0 15px 40px rgba(255, 98, 0, 0.5);
+  filter: brightness(1.15) !important;
+}
+
+/* Ambient Theatre Screen Glow */
+.cinema-screen-glow {
+  height: 12px;
+  width: 80%;
+  margin: 0 auto 3rem auto;
+  background: linear-gradient(to bottom, #ff7e2e, rgba(255, 98, 0, 0.05));
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  box-shadow: 0 12px 50px rgba(255, 98, 0, 0.6), 0 2px 12px rgba(255, 98, 0, 0.3);
+  position: relative;
+}
+
+.cinema-screen-glow::after {
+  content: 'SCREEN THIS WAY';
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.65rem;
+  letter-spacing: 0.35em;
+  color: #71717a;
+}

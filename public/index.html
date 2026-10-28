@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CinePulse — Orange Edition Cinema Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { 500: '#ff6200', 600: '#e05300', 400: '#ff7e2e', 50: '#fff7ed' },
+            charcoal: { 900: '#0c0d12', 800: '#141721', 700: '#1c202d', 600: '#282d3e' }
+          }
+        }
+      }
+    };
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-charcoal-900 text-zinc-100 min-h-screen relative overflow-x-hidden select-none">
+
+  <!-- React Bits Micro Slats Dynamic Canvas -->
+  <canvas id="microSlatsCanvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
+
+  <div class="relative z-10 flex flex-col min-h-screen">
+    <!-- Navbar -->
+    <header class="border-b border-zinc-800/80 bg-charcoal-900/90 backdrop-blur-md sticky top-0 z-40">
+      <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+        <div class="flex items-center gap-3 cursor-pointer" onclick="navigateTo('home')">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-amber-500 flex items-center justify-center shadow-lg shadow-brand-500/30">
+            <i class="fa-solid fa-film text-white text-lg"></i>
+          </div>
+          <div>
+            <span class="font-extrabold text-2xl tracking-tight text-white">CINE<span class="text-brand-500">PULSE</span></span>
+            <span class="text-[10px] tracking-widest text-zinc-400 block -mt-1 font-mono uppercase">Bengaluru Cinemas</span>
+          </div>
+        </div>
+
+        <nav class="flex items-center gap-3">
+          <!-- Active User Simulation Switcher -->
+          <div class="hidden sm:flex items-center bg-charcoal-800 border border-zinc-700/60 rounded-xl px-2 py-1 text-xs">
+            <span class="text-zinc-400 mr-2"><i class="fa-solid fa-users"></i> Actor:</span>
+            <select id="userSelector" class="bg-transparent text-brand-400 font-semibold focus:outline-none cursor-pointer" onchange="switchUser(this.value)">
+              <option value="user1" class="bg-charcoal-800 text-zinc-200">User 1 (Alice)</option>
+              <option value="user2" class="bg-charcoal-800 text-zinc-200">User 2 (Bob)</option>
+              <option value="user3" class="bg-charcoal-800 text-zinc-200">User 3 (Carol)</option>
+            </select>
+          </div>
+
+          <button onclick="navigateTo('home')" class="px-3 py-1.5 rounded-lg text-sm font-medium hover:text-brand-400 transition">Movies</button>
+          <button onclick="navigateTo('myBookings')" class="px-3 py-1.5 rounded-lg text-sm font-medium hover:text-brand-400 transition">My Bookings</button>
+          <button onclick="navigateTo('organiser')" class="px-3.5 py-1.5 rounded-lg text-sm font-semibold bg-brand-500 hover:bg-brand-600 text-white shadow-md shadow-brand-500/20 transition">Organiser</button>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main Dynamic Views Container -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 py-8 w-full" id="viewContainer">
+      <!-- Populated dynamically via JS -->
+    </main>
+
+    <!-- Global Toast Notification -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none px-4 py-3 rounded-xl border flex items-center gap-3 shadow-2xl backdrop-blur-md"></div>
+  </div>
+
+  <script src="js/background.js"></script>
+  <script src="js/carousel.js"></script>
+  <script src="js/concurrency.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
